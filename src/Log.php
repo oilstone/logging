@@ -61,7 +61,7 @@ class Log
     }
 
     /**
-     * @return object
+     * @return Log
      */
     public static function instance()
     {
