@@ -2,10 +2,20 @@
 
 namespace Oilstone\Logging;
 
+use Illuminate\Support\Str;
 use Psr\Log\LoggerInterface;
 
 /**
  * Class Log
+ * @method static bool isEnabled()
+ * @method static emergency($message, array $context = [])
+ * @method static alert($message, array $context = [])
+ * @method static critical($message, array $context = [])
+ * @method static error($message, array $context = [])
+ * @method static warning($message, array $context = [])
+ * @method static notice($message, array $context = [])
+ * @method static info($message, array $context = [])
+ * @method static debug($message, array $context = [])
  * @package Oilstone\Logging
  */
 class Log
@@ -42,6 +52,8 @@ class Log
     public static function __callStatic($name, $arguments)
     {
         if (static::instance()) {
+            $name = Str::after(Str::snake($name), 'is_');
+
             return static::instance()->{$name}(...$arguments);
         }
 
@@ -77,14 +89,6 @@ class Log
     }
 
     /**
-     * @return bool
-     */
-    public function enabled(): bool
-    {
-        return $this->enabled;
-    }
-
-    /**
      * Make the current object a global instance
      */
     public function setAsGlobal()
@@ -99,10 +103,18 @@ class Log
      */
     public function __call($name, $arguments)
     {
-        if ($this->enabled) {
+        if ($this->enabled()) {
             return $this->logger->{$name}(...$arguments);
         }
 
         return null;
+    }
+
+    /**
+     * @return bool
+     */
+    public function enabled(): bool
+    {
+        return $this->enabled;
     }
 }
