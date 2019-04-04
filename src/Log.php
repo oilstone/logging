@@ -104,7 +104,7 @@ class Log
     public function __call($name, $arguments)
     {
         if ($this->enabled()) {
-            return $this->logger->{$name}(...$arguments);
+            return $this->logger()->{$name}(...$arguments);
         }
 
         return null;
@@ -116,5 +116,13 @@ class Log
     public function enabled(): bool
     {
         return $this->enabled;
+    }
+
+    /**
+     * @return LoggerInterface
+     */
+    public function logger(): LoggerInterface
+    {
+        return $this->logger;
     }
 }
