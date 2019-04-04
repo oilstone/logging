@@ -1,0 +1,32 @@
+{
+  "name": "oilstone/logging",
+  "description": "A PSR\\Log wrapper for handling static log classes that can be enabled/disabled on the fly",
+  "keywords": [
+    "Logging"
+  ],
+  "homepage": "https://github.com/oilstone/logging",
+  "authors": [
+    {
+      "name": "Online Solutions",
+      "email": "support@onlinesolutionsltd.com"
+    }
+  ],
+  "require": {
+    "php": ">=7.1.0",
+    "illuminate/support": "^5.5",
+    "illuminate/log": "^5.5",
+    "psr/log": "^1.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "Oilstone\\Logging\\": "src"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Oilstone\\Logging\\Integrations\\Laravel\\ServiceProvider"
+      ]
+    }
+  }
+}
