@@ -2,7 +2,7 @@
 
 namespace Oilstone\Logging;
 
-use Illuminate\Support\Str;
+use Oilstone\GlobalClasses\MakeGlobal;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -18,7 +18,7 @@ use Psr\Log\LoggerInterface;
  * @method static debug($message, array $context = [])
  * @package Oilstone\Logging
  */
-class Log
+class Log extends MakeGlobal
 {
     /**
      * @var Log
@@ -45,25 +45,9 @@ class Log
     }
 
     /**
-     * @param $name
-     * @param $arguments
-     * @return mixed
-     */
-    public static function __callStatic($name, $arguments)
-    {
-        if (static::instance()) {
-            $name = Str::after(Str::snake($name), 'is_');
-
-            return static::instance()->{$name}(...$arguments);
-        }
-
-        return null;
-    }
-
-    /**
      * @return Log
      */
-    public static function instance()
+    public static function instance(): Log
     {
         return static::$instance;
     }
@@ -86,14 +70,6 @@ class Log
         $this->enabled = false;
 
         return $this;
-    }
-
-    /**
-     * Make the current object a global instance
-     */
-    public function setAsGlobal()
-    {
-        static::$instance = $this;
     }
 
     /**
