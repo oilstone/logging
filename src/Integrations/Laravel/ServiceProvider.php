@@ -31,10 +31,8 @@ class ServiceProvider extends LaravelServiceProvider
      */
     public function boot()
     {
-        if (config('app.debug')) {
-            $log = new Log(AppLog::getFacadeRoot());
+        $log = new Log(AppLog::getFacadeRoot());
 
-            $log->enable()->setAsGlobal();
-        }
+        $log->enable()->setAsGlobal();
     }
 }
