@@ -36,12 +36,19 @@ class Log extends MakeGlobal
     protected $logger;
 
     /**
+     * @var array
+     */
+    protected $appendData;
+
+    /**
      * Log constructor.
      * @param LoggerInterface $logger
+     * @param array $appendData
      */
-    public function __construct(LoggerInterface $logger)
+    public function __construct(LoggerInterface $logger, array $appendData = [])
     {
         $this->logger = $logger;
+        $this->appendData = $appendData;
     }
 
     /**
@@ -80,6 +87,13 @@ class Log extends MakeGlobal
     public function __call($name, $arguments)
     {
         if ($this->enabled()) {
+            if (in_array($name, ['emergency', 'alert', 'critical', 'error', 'warning', 'notice', 'info', 'debug'])) {
+                $arguments = [
+                    $arguments[0] ?? '',
+                    array_merge($arguments[1] ?? [], $this->appendData),
+                ];
+            }
+
             return $this->logger()->{$name}(...$arguments);
         }
 
