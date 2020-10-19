@@ -12,7 +12,7 @@ use Monolog\Logger;
  * Class Manager
  * @package Oilstone\Logging\Managers
  */
-abstract class Manager
+class Manager
 {
     /**
      * @var Logger
