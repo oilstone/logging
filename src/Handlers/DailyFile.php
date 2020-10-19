@@ -24,7 +24,10 @@ class DailyFile extends RotatingFileHandler
         parent::__construct(
             rtrim($config['file_path'] ?? '', '/') . '/' . ($config['file_name'] ?? 'default.log'),
             $config['max_files'] ?? 0,
-            Logger::toMonologLevel($config['level'] ?? 'warning')
+            Logger::toMonologLevel($config['level'] ?? 'warning'),
+            true,
+            664,
+            false
         );
     }
 }
