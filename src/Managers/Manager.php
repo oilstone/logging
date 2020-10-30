@@ -15,11 +15,6 @@ use Monolog\Logger;
 class Manager
 {
     /**
-     * @var string
-     */
-    protected static $requestId;
-
-    /**
      * @var Logger
      */
     protected Logger $logger;
@@ -60,13 +55,7 @@ class Manager
         }
 
         foreach ($processors as $processor) {
-            if (is_callable($processor)) {
-                $this->addProcessor($processor);
-            }
-        }
-
-        if ($config['append_request_data'] ?? false) {
-            $this->addRequestDataProcessor();
+            $this->addProcessor($processor);
         }
     }
 
@@ -83,45 +72,15 @@ class Manager
     }
 
     /**
-     * @param callable $callable
+     * @param object|callable|string $class
      */
-    public function addProcessor(callable $callable): void
+    public function addProcessor($class): void
     {
-        $this->logger->pushProcessor($callable);
-    }
-
-    /**
-     * @return void
-     */
-    protected function addRequestDataProcessor(): void
-    {
-        $this->logger->pushProcessor(function ($entry) {
-            $request = array_merge($entry['request'] ?? [], [
-                'requestId' => static::requestId(),
-                'requestTime' => time(),
-                'requestData' => array_filter($_SERVER ?? [], function (string $key) {
-                    return in_array($key, ['REQUEST_URI', 'QUERY_STRING', 'REQUEST_METHOD', 'SCRIPT_FILENAME']);
-                }, ARRAY_FILTER_USE_KEY),
-            ]);
-
-            if ($request) {
-                $entry['request'] = $request;
-            }
-
-            return $entry;
-        });
-    }
-
-    /**
-     * @return string
-     */
-    public static function requestId(): string
-    {
-        if (!isset(static::$requestId)) {
-            static::$requestId = uniqid();
+        if (is_string($class)) {
+            $class = new $class();
         }
 
-        return static::$requestId;
+        $this->logger->pushProcessor($class);
     }
 
     /**
