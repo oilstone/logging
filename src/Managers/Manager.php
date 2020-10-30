@@ -15,6 +15,11 @@ use Monolog\Logger;
 class Manager
 {
     /**
+     * @var string
+     */
+    protected static $requestId;
+
+    /**
      * @var Logger
      */
     protected Logger $logger;
@@ -59,6 +64,10 @@ class Manager
                 $this->addProcessor($processor);
             }
         }
+
+        if ($config['append_request_data'] ?? false) {
+            $this->addRequestDataProcessor();
+        }
     }
 
     /**
@@ -79,6 +88,48 @@ class Manager
     public function addProcessor(callable $callable): void
     {
         $this->logger->pushProcessor($callable);
+    }
+
+    /**
+     * @return void
+     */
+    protected function addRequestDataProcessor(): void
+    {
+        $this->logger->pushProcessor(function ($entry) {
+            $request = array_merge($entry['request'] ?? [], [
+                'requestId' => static::requestId(),
+                'requestTime' => time(),
+                'requestData' => array_filter($_SERVER ?? [], function (string $key) {
+                    return in_array($key, ['REQUEST_URI', 'QUERY_STRING', 'REQUEST_METHOD', 'SCRIPT_FILENAME']);
+                }, ARRAY_FILTER_USE_KEY),
+            ]);
+
+            if ($request) {
+                $entry['request'] = $request;
+            }
+
+            return $entry;
+        });
+    }
+
+    /**
+     * @return string
+     */
+    public static function requestId(): string
+    {
+        if (!isset(static::$requestId)) {
+            static::$requestId = uniqid();
+        }
+
+        return static::$requestId;
+    }
+
+    /**
+     * @return Logger
+     */
+    public function logger(): Logger
+    {
+        return $this->logger;
     }
 
     /**
