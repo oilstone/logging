@@ -1,118 +1,71 @@
 <?php
 
+/**
+ * @noinspection PhpUnused
+ */
+
 namespace Oilstone\Logging;
 
-use Oilstone\GlobalClasses\MakeGlobal;
-use Psr\Log\LoggerInterface;
+use Illuminate\Container\Container;
+use Illuminate\Contracts\Container\BindingResolutionException;
+use Oilstone\Logging\Managers\Manager;
 
 /**
  * Class Log
- * @method static bool isEnabled()
- * @method static emergency($message, array $context = [])
- * @method static alert($message, array $context = [])
- * @method static critical($message, array $context = [])
- * @method static error($message, array $context = [])
- * @method static warning($message, array $context = [])
- * @method static notice($message, array $context = [])
- * @method static info($message, array $context = [])
- * @method static debug($message, array $context = [])
+ * @method static void alert(string $message, array $context = []) Action must be taken immediately.
+ * @method static void critical(string $message, array $context = []) Critical conditions.
+ * @method static void debug(string $message, array $context = []) Detailed debug information.
+ * @method static void emergency(string $message, array $context = []) System is unusable.
+ * @method static void error(string $message, array $context = []) Runtime errors that do not require immediate action but should typically be logged and monitored.
+ * @method static void info(string $message, array $context = []) Interesting events.
+ * @method static void log($level, string $message, array $context = []) Logs with an arbitrary level.
+ * @method static void notice(string $message, array $context = []) Normal but significant events.
+ * @method static void warning(string $message, array $context = []) Exceptional occurrences that are not errors.
  * @package Oilstone\Logging
  */
-class Log extends MakeGlobal
+class Log
 {
     /**
-     * @var Log
+     * @var string
      */
-    protected static $instance;
-
-    /**
-     * @var bool
-     */
-    protected $enabled = false;
-
-    /**
-     * @var LoggerInterface
-     */
-    protected $logger;
-
-    /**
-     * @var array
-     */
-    protected $appendData;
-
-    /**
-     * Log constructor.
-     * @param LoggerInterface $logger
-     * @param array $appendData
-     */
-    public function __construct(LoggerInterface $logger, array $appendData = [])
-    {
-        $this->logger = $logger;
-        $this->appendData = $appendData;
-    }
-
-    /**
-     * @return Log
-     */
-    public static function instance(): Log
-    {
-        return static::$instance;
-    }
-
-    /**
-     * @return Log
-     */
-    public function enable(): self
-    {
-        $this->enabled = true;
-
-        return $this;
-    }
-
-    /**
-     * @return Log
-     */
-    public function disable(): self
-    {
-        $this->enabled = false;
-
-        return $this;
-    }
+    protected static string $defaultInstanceBinding = 'log';
 
     /**
      * @param $name
      * @param $arguments
-     * @return mixed
+     * @return mixed|null
      */
-    public function __call($name, $arguments)
+    public static function __callStatic($name, $arguments)
     {
-        if ($this->enabled()) {
-            if (in_array($name, ['emergency', 'alert', 'critical', 'error', 'warning', 'notice', 'info', 'debug'])) {
-                $arguments = [
-                    $arguments[0] ?? '',
-                    array_merge($arguments[1] ?? [], $this->appendData),
-                ];
-            }
-
-            return $this->logger()->{$name}(...$arguments);
+        if ($logManager = static::instance()) {
+            return $logManager->{$name}(...$arguments);
         }
 
         return null;
     }
 
     /**
-     * @return bool
+     * @param string|null $binding
+     * @return Manager|object|null
      */
-    public function enabled(): bool
+    public static function instance(?string $binding = null)
     {
-        return $this->enabled;
+        if (is_null($binding)) {
+            $binding = static::$defaultInstanceBinding;
+        }
+
+        try {
+            return Container::getInstance()->make($binding);
+        } catch (BindingResolutionException $e) {
+            return null;
+        }
     }
 
     /**
-     * @return LoggerInterface
+     * @param string $defaultInstanceBinding
      */
-    public function logger(): LoggerInterface
+    public static function setDefaultInstanceBinding(string $defaultInstanceBinding): void
     {
-        return $this->logger;
+        self::$defaultInstanceBinding = $defaultInstanceBinding;
     }
 }
