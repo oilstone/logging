@@ -9,6 +9,7 @@ namespace Oilstone\Logging;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Oilstone\Logging\Managers\Manager;
+use Throwable;
 
 /**
  * Class Log
@@ -37,8 +38,12 @@ class Log
      */
     public static function __callStatic($name, $arguments)
     {
-        if ($logManager = static::instance()) {
-            return $logManager->{$name}(...$arguments);
+        try {
+            if ($logManager = static::instance()) {
+                return $logManager->{$name}(...$arguments);
+            }
+        } catch (Throwable $e) {
+            //
         }
 
         return null;

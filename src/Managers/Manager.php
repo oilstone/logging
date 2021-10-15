@@ -7,6 +7,7 @@
 namespace Oilstone\Logging\Managers;
 
 use Monolog\Logger;
+use Throwable;
 
 /**
  * Class Manager
@@ -107,7 +108,11 @@ class Manager
      */
     public function log($level, string $message, array $context = []): void
     {
-        $this->logger->log($level, $message, $context);
+        try {
+            $this->logger->log($level, $message, $context);
+        } catch (Throwable $e) {
+            //
+        }
     }
 
     /**
