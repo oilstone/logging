@@ -7,6 +7,7 @@ use Exception;
 use Maxbanton\Cwh\Handler\CloudWatch as BaseHandler;
 use Monolog\Formatter\JsonFormatter;
 use Monolog\Logger;
+use Throwable;
 
 /**
  * Class CloudWatch
@@ -33,5 +34,44 @@ class CloudWatch extends BaseHandler
         );
 
         $this->setFormatter(new JsonFormatter());
+    }
+
+    /**
+     * @return void
+     */
+    public function close(): void
+    {
+        try {
+            parent::close();
+        } catch (Throwable $t) {
+            // Ignore an error whilst flushing the logs buffer
+        }
+    }
+
+    /**
+     * @param array $record
+     * @return bool
+     */
+    public function handle(array $record): bool
+    {
+        try {
+            return parent::handle($record);
+        } catch (Throwable $t) {
+            // Ignore an error whilst handling a logging call
+
+            return false;
+        }
+    }
+
+    /**
+     * @return void
+     */
+    public function reset(): void
+    {
+        try {
+            parent::reset();
+        } catch (Throwable $t) {
+            // Ignore an error whilst resetting the logger
+        }
     }
 }
