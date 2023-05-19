@@ -16,7 +16,7 @@
     "php": ">=7.4.0",
     "illuminate/container": ">=7.0",
     "maxbanton/cwh": "^2.0",
-    "monolog/monolog": "^2.1"
+    "monolog/monolog": "^3.3"
   },
   "autoload": {
     "psr-4": {
