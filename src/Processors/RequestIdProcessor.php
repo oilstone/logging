@@ -6,6 +6,7 @@
 
 namespace Oilstone\Logging\Processors;
 
+use Monolog\LogRecord;
 use Monolog\Processor\ProcessorInterface;
 
 /**
@@ -23,7 +24,7 @@ class RequestIdProcessor implements ProcessorInterface
      * @param array $record
      * @return array
      */
-    public function __invoke(array $record)
+    public function __invoke(LogRecord $record)
     {
         if (!isset(static::$requestId)) {
             static::$requestId = uniqid();
