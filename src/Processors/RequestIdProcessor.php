@@ -21,8 +21,8 @@ class RequestIdProcessor implements ProcessorInterface
     protected static $requestId;
 
     /**
-     * @param array $record
-     * @return array
+     * @param LogRecord $record
+     * @return LogRecord
      */
     public function __invoke(LogRecord $record)
     {
