@@ -7,6 +7,7 @@ use Exception;
 use PhpNexus\Cwh\Handler\CloudWatch as BaseHandler;
 use Monolog\Formatter\JsonFormatter;
 use Monolog\Logger;
+use Monolog\LogRecord;
 use Throwable;
 
 /**
@@ -49,10 +50,10 @@ class CloudWatch extends BaseHandler
     }
 
     /**
-     * @param array $record
+     * @param LogRecord $record
      * @return bool
      */
-    public function handle(array $record): bool
+    public function handle(LogRecord $record): bool
     {
         try {
             return parent::handle($record);
