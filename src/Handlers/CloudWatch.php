@@ -4,7 +4,7 @@ namespace Oilstone\Logging\Handlers;
 
 use Aws\CloudWatchLogs\CloudWatchLogsClient;
 use Exception;
-use Maxbanton\Cwh\Handler\CloudWatch as BaseHandler;
+use PhpNexus\Cwh\Handler\CloudWatch as BaseHandler;
 use Monolog\Formatter\JsonFormatter;
 use Monolog\Logger;
 use Throwable;
